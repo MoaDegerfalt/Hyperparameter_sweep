@@ -93,8 +93,14 @@ def main(hyperparameters, filename, name, template):
 
 
 hyperparameters = {
-    "invariant_layers": {"values": [2, 1]},
-    "invariant_neurons": {"values": [128, 96]},
+    "invariant_layers": {"values": [4, 3, 2, 1]},
+    "invariant_neurons": {"values": [128, 96, 64, 32]},
+    "num_layers": {"values": [10, 8, 6, 4, 3, 2, 1]},
+    "parity": {"values": [True, False]},
+    "l_max": {"values": [3, 2, 1]},
+    "num_features": {"values": [40, 30, 20, 10]},  
+    "num_basis": {"values": [10, 8, 6, 4]},
+    "use_sc": {"values": [True]},
 }
 
 filename = "hyperparameter_combinations_2.json"
