@@ -38,16 +38,16 @@ def generate_combinations(hyperparameters):
 
 
 # Kollar om kombinationen redan körts, om inte så sapas en config fil och ett jobscript.
-def add_combination_if_not_exists(new_combination, filename, index, name, template):
-    done_combinations = load_done_combinations(filename)  # Läser in json fil med alla befintliga kombinationer.
+def add_combination_if_not_exists(new_combination, filename, index, name, template, done_combinations):
+    
     comb_hash = create_hash(new_combination)  # Generera en unik hash för den ny a kombinationen.
     if comb_hash in done_combinations:  # Kolla om konbinationen redan finns
         print("Kombinationen finns redan. \n" )
     else:
         write_files(new_combination, name, index, "jobbsctipts", "configuration_files", template)
-        done_combinations[comb_hash] = new_combination
-        save_combinations(filename, done_combinations)
+        
         print("Kombinationen har lagts till.\n")
+        return comb_hash 
 
 
 # Writes new configuration files from a template and saves the files in a folder. Creates jobscripts for each configuration.
@@ -86,10 +86,14 @@ def main(hyperparameters, filename, name, template):
     # Filename är en json fil med de parametrar som redan körts.
     # Name är det önskade namnet på svepet, här är det viktigt att välja ett unikt namn så at inte körningarna blandas ihop i wandbai
     # Template är en .yaml som configurationsfilerna ska utgå ifrån.
+    done_combinations = load_done_combinations(filename)  # Läser in json fil med alla befintliga kombinationer.
     i = 1
     for combinations in generate_combinations(hyperparameters):
         add_combination_if_not_exists(combinations, filename, i, name, template)
         i = i + 1
+        done_combinations[comb_hash] = combinations
+    save_combinations(filename, done_combinations)
+    
 
 
 hyperparameters = {
@@ -105,4 +109,4 @@ hyperparameters = {
 
 filename = "hyperparameter_combinations_2.json"
 
-main(hyperparameters, filename, "sweep_test", "Base.yaml")
+main(hyperparameters, filename, "sweep_test", "Base.yaml") # Base.yaml file inclues references  and keys to a specific project in wandbai. 
