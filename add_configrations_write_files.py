@@ -78,17 +78,15 @@ def main(hyperparameters, filename, name, template, configuration_files):
         i = i + 1
 
 
-hyperparameters = {
-    "invariant_layers": {"values": [4, 3, 2, 1]},
-    "invariant_neurons": {"values": [128, 96, 64, 32]},
-    "num_layers": {"values": [10, 8, 6, 4, 3, 2, 1]},
-    "parity": {"values": [True, False]},
+hyperparameters_allegro = {
+    "parity": {"values": ["o3_full", "o3_restricted", "so3"]},
     "l_max": {"values": [3, 2, 1]},
-    "num_features": {"values": [40, 30, 20, 10]},  
-    "num_basis": {"values": [10, 8, 6, 4]},
-    "use_sc": {"values": [True]},
+    "r_max": {"values": [5.5, 5, 4.5, 4, 3.5, 3]},
+    "num_layers": {"values": [1, 2, 3]},
+    "env_embed_multiplicity":  {"values": [1, 8, 32, 64]}, # num_features in NequIP
+    "num_basis": {"values": [4, 8, 10]},
 }
 
 filename = "hyperparameter_combinations_allegro.json"
 
-main(hyperparameters, filename, "sweep_", "Base.yaml", "configuration_folder")
+main(hyperparameters_allegro, filename, "Allegro_stress", "Base.yaml", "configuration_folder")
