@@ -44,14 +44,14 @@ def add_combination_if_not_exists(new_combination, filename, index, name, templa
     if comb_hash in done_combinations:  # Kolla om konbinationen redan finns
         print("Kombinationen finns redan. \n" )
     else:
-        write_files(new_combination, name, index, "jobbsctipts", "configuration_files", template)
+        write_files(new_combination, name, index, "configuration_files", template)
         done_combinations[comb_hash] = new_combination
         save_combinations(filename, done_combinations)
         print("Kombinationen har lagts till.\n")
 
 
 # Writes new configuration files from a template and saves the files in a folder. Creates jobscripts for each configuration.
-def write_files(combination, name, index, jobbscript_folder, configurations_folder, template):
+def write_files(combination, name, index, configurations_folder, template):
     # Write configuration file
     filename_conf = f"{name}_{index}.yaml"
     if not os.path.exists(configurations_folder):
@@ -65,21 +65,6 @@ def write_files(combination, name, index, jobbscript_folder, configurations_fold
             f2.write(line)
         f2.write("\n")
         yaml.dump(combination, f2)
-
-    # Write the jobscript
-    if not os.path.exists(jobbscript_folder):
-        os.makedirs(jobbscript_folder)
-    filename_jobb = 'jobscript_' + str(name) + '_' + str(index)
-    output_path_jobb = os.path.join(jobbscript_folder, filename_jobb)
-
-    with open(output_path_jobb, 'w') as f:
-        f.write('#!/usr/bin/env bash\n')
-        f.write('#SBATCH -A NAISS2023-3-31 -p alvis\n')
-        f.write('#SBATCH -N 1 --gpus-per-node=T4:1 \n')
-        f.write('#SBATCH -t 0-02:00:00\n\n\n')
-        f.write(
-            'apptainer exec nequip.sif nequip-train ' + "/mimer/NOBACKUP/groups/ltu-fy/Moa/" + configurations_folder + "/" + filename_conf + '\n')
-
 
 def main(hyperparameters, filename, name, template):
     # Hyperparameters är en dictionary med vilka hyperparametrar som ska varieras och en lista med de värden som ska testas.
