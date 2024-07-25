@@ -38,13 +38,13 @@ def generate_combinations(hyperparameters):
 
 
 # Kollar om kombinationen redan körts, om inte så sapas en config fil och ett jobscript.
-def add_combination_if_not_exists(new_combination, filename, index, name, template):
+def add_combination_if_not_exists(new_combination, filename, index, name, template, configuration_files):
     done_combinations = load_done_combinations(filename)  # Läser in json fil med alla befintliga kombinationer.
     comb_hash = create_hash(new_combination)  # Generera en unik hash för den ny a kombinationen.
     if comb_hash in done_combinations:  # Kolla om konbinationen redan finns
         print("Kombinationen finns redan. \n" )
     else:
-        write_files(new_combination, name, index, "configuration_files", template)
+        write_files(new_combination, name, index, configuration_files, template)
         done_combinations[comb_hash] = new_combination
         save_combinations(filename, done_combinations)
         print("Kombinationen har lagts till.\n")
@@ -61,19 +61,20 @@ def write_files(combination, name, index, configurations_folder, template):
     with open(template, 'r') as f1, open(output_path_config, 'w') as f2:
         f2.write(f"# Configuration {index} written to {filename_conf}\n")
         f2.write(f"run_name: {name}_{index}\n")
+        f2.write(f"root: results/{name}\n")
         for line in f1:
             f2.write(line)
         f2.write("\n")
         yaml.dump(combination, f2)
 
-def main(hyperparameters, filename, name, template):
+def main(hyperparameters, filename, name, template, configuration_files):
     # Hyperparameters är en dictionary med vilka hyperparametrar som ska varieras och en lista med de värden som ska testas.
     # Filename är en json fil med de parametrar som redan körts.
     # Name är det önskade namnet på svepet, här är det viktigt att välja ett unikt namn så at inte körningarna blandas ihop i wandbai
     # Template är en .yaml som configurationsfilerna ska utgå ifrån.
     i = 1
     for combinations in generate_combinations(hyperparameters):
-        add_combination_if_not_exists(combinations, filename, i, name, template)
+        add_combination_if_not_exists(combinations, filename, i, name, template, configuration_files)
         i = i + 1
 
 
@@ -88,6 +89,6 @@ hyperparameters = {
     "use_sc": {"values": [True]},
 }
 
-filename = "hyperparameter_combinations_2.json"
+filename = "hyperparameter_combinations_allegro.json"
 
-main(hyperparameters, filename, "sweep_test", "Base.yaml")
+main(hyperparameters, filename, "sweep_", "Base.yaml", "configuration_folder")
